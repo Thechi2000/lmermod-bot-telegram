@@ -533,6 +533,7 @@ name = "lmermod-bot-telegram"
 version = "0.1.0"
 dependencies = [
  "async-trait",
+ "lazy_static",
  "public-ip",
  "serde",
  "serde_json",
