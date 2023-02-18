@@ -1,6 +1,8 @@
 mod ip;
 
+
 use serde::{Deserialize, Serialize};
+
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
 use std::net::Ipv4Addr;
@@ -11,7 +13,7 @@ use telegram_bot2::{bot, commands, daemons, BotBuilder};
 
 use ip::*;
 
-const CONFIG_FILE: &str = env!("CONFIG_FILE");
+const STATE_FILE: &str = "/var/bot/state.json";
 
 #[derive(Serialize, Deserialize)]
 pub struct State {
@@ -25,7 +27,7 @@ impl State {
             .write(true)
             .truncate(true)
             .create(true)
-            .open(CONFIG_FILE)
+            .open(STATE_FILE)
             .unwrap()
             .write_all(serde_json::to_string(self).unwrap().as_bytes())
             .unwrap();
@@ -33,7 +35,7 @@ impl State {
 
     pub fn load() -> Option<Self> {
         let mut string = String::new();
-        File::open(CONFIG_FILE)
+        File::open(STATE_FILE)
             .ok()?
             .read_to_string(&mut string)
             .ok()?;
