@@ -13,7 +13,7 @@ use telegram_bot2::{bot, commands, daemons, BotBuilder};
 
 use ip::*;
 
-const STATE_FILE: &str = "/var/bot/state.json";
+const STATE_FILE: &str = "./state.json";
 
 #[derive(Serialize, Deserialize)]
 pub struct State {
