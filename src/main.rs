@@ -3,17 +3,19 @@ mod ip;
 
 use serde::{Deserialize, Serialize};
 
-use std::fs::{File, OpenOptions};
+use std::fs::{create_dir_all, File, OpenOptions};
 use std::io::{Read, Write};
 use std::net::Ipv4Addr;
 use std::sync::Mutex;
 use std::time::Duration;
+use const_format::concatcp;
 use telegram_bot2::models::ChatId;
 use telegram_bot2::{bot, commands, daemons, BotBuilder};
 
 use ip::*;
 
-const STATE_FILE: &str = "./state.json";
+const DIR : &str = "/var/bot";
+const STATE_FILE: &str = concatcp!("/state.json");
 
 #[derive(Serialize, Deserialize)]
 pub struct State {
@@ -23,6 +25,8 @@ pub struct State {
 
 impl State {
     pub fn save(&self) {
+        create_dir_all(DIR).unwrap();
+
         OpenOptions::new()
             .write(true)
             .truncate(true)

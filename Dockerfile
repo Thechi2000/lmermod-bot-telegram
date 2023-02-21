@@ -17,6 +17,5 @@ COPY ./src ./src
 RUN cargo build  --release
 
 FROM runtime
-WORKDIR /var/bot
 COPY --from=build /lmermod-bot-telegram/target/release/lmermod-bot-telegram .
 CMD ["./lmermod-bot-telegram"]
