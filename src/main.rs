@@ -9,8 +9,8 @@ use std::net::Ipv4Addr;
 use std::sync::Mutex;
 use std::time::Duration;
 use const_format::concatcp;
-use telegram_bot2::models::ChatId;
-use telegram_bot2::{bot, commands, daemons, BotBuilder};
+use telegram_bot2::models::{ChatId, SendMessageBuilder};
+use telegram_bot2::{bot, commands, daemons, BotBuilder, Bot, Builder, command};
 
 use ip::*;
 
@@ -56,12 +56,18 @@ impl Default for State {
     }
 }
 
+#[command("/help")]
+async fn help(bot: &Bot, id: ChatId) -> Result<(), ()>{
+    bot.send_message(SendMessageBuilder::new(id, "Available commands are:\n/ip: request ip information".to_owned()).build()).await.unwrap();
+    Ok(())
+}
+
 #[bot]
 fn bot() -> _ {
     BotBuilder::new()
         .interval(Duration::from_secs(0))
         .timeout(300)
         .with_state(State::load().unwrap_or_default())
-        .commands(commands![ip])
+        .commands(commands![ip, help])
         .daemons(daemons![ip_daemon])
 }
