@@ -1,20 +1,19 @@
 mod ip;
 
-
 use serde::{Deserialize, Serialize};
 
+use const_format::concatcp;
 use std::fs::{create_dir_all, File, OpenOptions};
 use std::io::{Read, Write};
 use std::net::Ipv4Addr;
 use std::sync::Mutex;
 use std::time::Duration;
-use const_format::concatcp;
 use telegram_bot2::models::{ChatId, SendMessageBuilder};
-use telegram_bot2::{bot, commands, daemons, BotBuilder, Bot, Builder, command};
+use telegram_bot2::{bot, command, commands, daemons, Bot, BotBuilder, Builder};
 
 use ip::*;
 
-const DIR : &str = "/var/bot";
+const DIR: &str = "/var/bot";
 const STATE_FILE: &str = concatcp!("/state.json");
 
 #[derive(Serialize, Deserialize)]
@@ -56,9 +55,20 @@ impl Default for State {
     }
 }
 
-#[command("/help")]
-async fn help(bot: &Bot, id: ChatId) -> Result<(), ()>{
-    bot.send_message(SendMessageBuilder::new(id, "Available commands are:\n/ip: request ip information".to_owned()).build()).await.unwrap();
+#[command("/help <cmd>")]
+async fn help(bot: &Bot, id: ChatId, cmd: Option<String>) -> Result<(), telegram_bot2::Error> {
+    bot.send_message(
+        SendMessageBuilder::new(
+            id,
+            match cmd.as_ref().map(String::as_str) {
+                Some("ip") => "/ip <cmd>\n/ip: Show current server ip\n/ip listen: Listen to ip changes. You will receive a notification each time the ip is modified\n/ip unlisten: unregister from ip notifications".to_owned(),
+                _ => "Available commands are:\n/ip: request ip information".to_owned(),
+            },
+        )
+        .build(),
+    )
+    .await?;
+
     Ok(())
 }
 
