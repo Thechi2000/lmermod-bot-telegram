@@ -72,6 +72,19 @@ async fn help(bot: &Bot, id: ChatId, cmd: Option<String>) -> Result<(), telegram
     Ok(())
 }
 
+#[command("/start")]
+async fn start(bot: &Bot, id: ChatId) -> Result<(), telegram_bot2::Error> {
+    bot.send_message(
+        SendMessageBuilder::new(
+            id,
+            "Hi, to see a full overview of my features, use /help".to_owned(),
+        )
+        .build(),
+    )
+    .await?;
+    Ok(())
+}
+
 #[bot]
 fn bot() -> _ {
     BotBuilder::new()
